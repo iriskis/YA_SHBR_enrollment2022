@@ -34,6 +34,7 @@ class ImportSchema(Schema):
                       validate=Length(max=10000))
     updateDate = Date(required=True)
 
+
 class NodeSchema(Schema):
 
     id = UUID(strict=True, required=True)

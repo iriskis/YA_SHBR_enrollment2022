@@ -84,15 +84,3 @@ deploy/hosts.ini (с установленной Ubuntu) и выполните к
     disk-api
 
 После запуска команд приложение начнет слушать запросы на 0.0.0.0:8081.
-Для отладки в PyCharm необходимо запустить :shell:`env/bin/disk-api`.
-
-Как запустить тесты локально?
------------------------------
-.. code-block:: shell
-
-    make devenv
-    make postgres
-    source env/bin/activate
-    pytest
-
-Для отладки в PyCharm необходимо запустить :shell:`env/bin/pytest`.
