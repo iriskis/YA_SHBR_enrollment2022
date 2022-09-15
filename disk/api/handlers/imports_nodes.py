@@ -4,6 +4,7 @@ from typing import Generator
 from aiohttp.web_response import Response
 from aiohttp_apispec import docs, request_schema, response_schema
 from aiomisc import chunk_list
+from sqlalchemy.dialects.postgresql import insert
 
 from disk.api.schema import ImportSchema
 from disk.db.schema import files_table
@@ -41,7 +42,18 @@ class ImportsView(BaseView):
             update_date = self.request['data']['updateDate']
             files_rows = self.make_files_table_rows(items, update_date)
 
-            query = files_table.insert()
-            await conn.execute(query.values(list(files_rows)))
+            insert_smth = insert(files_table).values(list(files_rows))
+            
+            query = insert_smth.on_conflict_do_update(
+                constraint=files_table.primary_key,
+                set_ = dict(
+                    type=insert_smth.excluded.type,
+                    url=insert_smth.excluded.url,
+                    parent_id=insert_smth.excluded.parent_id,
+                    size=insert_smth.excluded.size,
+                    update_date=insert_smth.excluded.update_date,
+                )
+            )
+            await conn.execute(query)
 
         return Response(status=HTTPStatus.OK)
