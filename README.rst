@@ -3,6 +3,8 @@
 
 Тестовый проект для ШБР 2022.
 
+Реализованы импорт, получение, удаление объектов файловой системы. Проходят соответствующие юнит-тесты.
+
 .. image:: https://github.com/iriskis/enrollment2022/workflows/CI/badge.svg?branch=master&event=push
     :target: https://github.com/iriskis/enrollment2022/actions?query=workflow%3ACI
 
@@ -62,6 +64,7 @@ deploy/hosts.ini (с установленной Ubuntu) и выполните к
 * :shell:`make` Отобразить список доступных команд
 * :shell:`make devenv` Создать и настроить виртуальное окружение для разработки
 * :shell:`make postgres` Поднять Docker-контейнер с PostgreSQL
+* :shell:`make test` Запуск юнит-тестов
 * :shell:`make clean` Удалить файлы, созданные модулем `distutils`_
 * :shell:`make sdist` Создать `source distribution`_
 * :shell:`make docker` Собрать Docker-образ
