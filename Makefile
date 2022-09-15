@@ -5,7 +5,6 @@ REGISTRY_IMAGE ?= $(PROJECT_NAMESPACE)/$(PROJECT_NAME)
 
 all:
 	@echo "make devenv		- Create & setup development virtual environment"
-	@echo "make lint		- Check code with pylama"
 	@echo "make postgres	- Start postgres container"
 	@echo "make clean		- Remove files created by distutils"
 	@echo "make test		- Run tests"
@@ -26,9 +25,6 @@ devenv: clean
 	# устанавливаем основные + dev зависимости из extras_require (см. setup.py)
 	env/bin/pip install -Ue '.[dev]'
 
-lint:
-	env/bin/pylama
-
 postgres:
 	docker stop disk-postgres || true
 	docker run --rm --detach --name=disk-postgres \
@@ -37,8 +33,8 @@ postgres:
 		--env POSTGRES_DB=disk \
 		--publish 5432:5432 postgres
 
-test: lint postgres
-	env/bin/pytest -vv --cov=disk --cov-report=term-missing tests
+test:
+	python3 tests/unit_test.py 
 
 sdist: clean
 	# официальный способ дистрибуции python-модулей
