@@ -1,5 +1,5 @@
 import json
-from datetime import date
+from datetime import datetime
 from decimal import Decimal
 from functools import partial, singledispatch
 from typing import Any
@@ -35,14 +35,15 @@ def convert_asyncpg_record(value: Record):
     return dict(value)
 
 
-@convert.register(date)
-def convert_date(value: date):
+@convert.register(datetime)
+def convert_date(value: datetime):
     """
     В проекте объект date возвращается только в одном случае - если необходимо
     отобразить дату рождения. Для отображения даты рождения должен
     использоваться формат ДД.ММ.ГГГГ.
     """
-    return value.strftime(DATE_FORMAT)
+    # return value.isoformat()
+    return value.strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
 @convert.register(UUID)
@@ -93,15 +94,6 @@ class AsyncGenJSONListPayload(Payload):
                          *args, **kwargs)
 
     async def write(self, writer):
-        # Начало объекта
-        await writer.write(
-            ('{"%s":[' % self.root_object).encode(self._encoding)
-        )
-
-
-        # TODO: 1. read all lines, collect them
-        # 2. after for build one dictionary. with children
-        # 3. call dumps from dictionary await writer.write(dumps(row).encode(self._encoding)
         items = {}
         tree = {}
         root = None
@@ -117,22 +109,26 @@ class AsyncGenJSONListPayload(Payload):
             for parent in tree:
                 if parent not in items:
                     root = tree[parent][0]
-        node_list = []
-        q = deque()
-        q.append((root, node_list))
-        while q:
-            root, nodes = q.popleft()
-            node = items[root]
-            nodes.append(node)
 
+        def build_response_node(node_id):
+            node = items[node_id]
+            node['children'] = None
             if node['type'] == 'FOLDER':
                 node['children'] = []
-                for child in tree[root]:
-                    q.append((child, node['children']))
-  
-        await writer.write(dumps(node_list[0]).encode(self._encoding))
-        # Конец объекта
-        await writer.write(b']}')
+                for child_id in tree[node_id]:
+                    child = build_response_node(child_id)
+                    node['children'].append(child)
+                    node['size'] += child['size']
+                    if child['date'] > node['update_date']:
+                        node['update_date'] = child['date']
+            node['parentId'] = node['parent_id']
+            del node['parent_id']
+
+            node['date'] = node['update_date']
+            del node['update_date']
+            return node
+        result = build_response_node(root)
+        await writer.write(dumps(result).encode(self._encoding))
 
 
 __all__ = (

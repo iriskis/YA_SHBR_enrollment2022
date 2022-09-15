@@ -24,10 +24,10 @@ class ImportsView(BaseView):
         for item in items:
             yield {
                 'update_date': update_date,
-                'url': item['url'],
+                'url': item.get('url', None),
                 'id': item['id'],
                 'parent_id': item['parentId'],
-                'size': item['size'],
+                'size': item.get('size', 0),
                 'type': item['type'],
             }
 
@@ -39,7 +39,7 @@ class ImportsView(BaseView):
         # не дождавшегося ответа) откатить частично добавленные изменения.
         async with self.pg.transaction() as conn:
             items = self.request['data']['items']
-            update_date = self.request['data']['updateDate']
+            update_date = self.request['data']['updateDate'].replace(tzinfo=None)
             files_rows = self.make_files_table_rows(items, update_date)
 
             insert_smth = insert(files_table).values(list(files_rows))

@@ -10,12 +10,12 @@
 from datetime import date
 
 from marshmallow import Schema, ValidationError, validates, validates_schema
-from marshmallow.fields import Date, Dict, Int, List, Nested, Str, UUID, Url
+from marshmallow.fields import DateTime, Dict, Int, List, Nested, Str, UUID, Url
 from marshmallow.validate import Length, OneOf, Range
 
 from disk.db.schema import FileType
 
-DATE_FORMAT = '%d.%m.%Y'
+DATE_FORMAT = ''
 
 class ImportNodeSchema(Schema):
 
@@ -25,14 +25,14 @@ class ImportNodeSchema(Schema):
     )
     url = Str(validate=Length(min=0, max=256))
     id = UUID(strict=True, required=True)
-    parentId = UUID(allow_none=True)
-    size = Int(validate=Range(min=0), required=True)
+    parentId = UUID(allow_none=True, required=True)
+    size = Int(validate=Range(min=1))
 
 
 class ImportSchema(Schema):
     items = Nested(ImportNodeSchema, many=True, required=True,
                       validate=Length(max=10000))
-    updateDate = Date(required=True)
+    updateDate = DateTime(required=True)
 
 
 class NodeSchema(Schema):
@@ -44,7 +44,7 @@ class NodeSchema(Schema):
         required=True
     )
     parentId = UUID(required=False)
-    update_date = Date()
+    update_date = DateTime()
     size = Int(validate=Range(min=0), required=True)
 
 
