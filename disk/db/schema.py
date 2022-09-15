@@ -48,6 +48,6 @@ files_table = Table(
     Column('type', PgEnum(FileType, name='file_type'), nullable=False),
     Column('url', String),
     Column('size', Integer, nullable=False),
-    Column('parent_id', UUID(as_uuid=True), ForeignKey('files.id'), nullable=True),
+    Column('parent_id', UUID(as_uuid=True), ForeignKey('files.id', ondelete='CASCADE'), nullable=True),
     Column('update_date', DateTime, nullable=False),
 )

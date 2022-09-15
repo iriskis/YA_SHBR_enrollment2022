@@ -130,7 +130,6 @@ class AsyncGenJSONListPayload(Payload):
                 for child in tree[root]:
                     q.append((child, node['children']))
   
-        print(node_list)
         await writer.write(dumps(node_list[0]).encode(self._encoding))
         # Конец объекта
         await writer.write(b']}')

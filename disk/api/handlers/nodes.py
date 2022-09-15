@@ -53,10 +53,5 @@ class NodesView(BaseNodeView):
             nodes_query.c.update_date
         ])
 
-        async with self.pg.transaction() as conn:
-
-            result = await conn.execute(statement)
-            print(type(result))
-
         body = SelectQuery(statement, self.pg.transaction())
         return Response(body=body)
