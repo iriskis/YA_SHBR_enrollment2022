@@ -5,8 +5,6 @@
 
 Реализованы импорт, получение, удаление объектов файловой системы. Проходят соответствующие юнит-тесты.
 
-.. image:: https://github.com/iriskis/enrollment2022/workflows/CI/badge.svg?branch=master&event=push
-    :target: https://github.com/iriskis/enrollment2022/actions?query=workflow%3ACI
 
 Что внутри?
 ===========
@@ -34,13 +32,6 @@
         -e DISK_PG_URL=postgresql://user:hackme@localhost/disk \
         iriskis/enrollment2022
 
-Все доступные опции запуска любой команды можно получить с помощью
-аргумента :shell:`--help`:
-
-.. code-block:: shell
-
-    docker run iriskis/enrollment2022 disk-db --help
-    docker run iriskis/enrollment2022 disk-api --help
 
 Опции для запуска можно указывать как аргументами командной строки, так и
 переменными окружения с префиксом :shell:`DISK` (например: вместо аргумента
